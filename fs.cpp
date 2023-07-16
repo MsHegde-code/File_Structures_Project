@@ -468,6 +468,7 @@ int main()
     unordered_map<int, int> a_HashKey;
     unordered_map<int, int> musicHashKey;
 
+    // to load the data from file to corresponding hash tables
     loadArtistData(artist_Hash, a_HashKey);
     loadMusicData(musicHashTable, musicHashKey);
     int choice;
