@@ -137,7 +137,7 @@ void addartist(unordered_map<int, vector<artist>> &artist_Hash,
     getline(cin, artist.gender);
 
     int hashValue = getHash_Value(artist.id, tableSize); // generating a hash value for the artist id
-    artist_Hash[hashValue].push_back(artist);
+    artist_Hash[hashValue].push_back(artist);   //progressive overflow implementation
 
     // update the hash table for the corresponding key value pair
     a_HashKey[artist.id] = hashValue;
@@ -174,7 +174,7 @@ void search_Artist(const unordered_map<int, vector<artist>> &artist_Hash,
     auto it = a_HashKey.find(artistId); // search the in the hash table using find() built-in fun
     if (it != a_HashKey.end())
     {
-        int hashValue = it->second; //"second" variable will be the value of hash table
+        int hashValue = it->second; //"second" variable will be the value of hash table,"first" will be key
         const vector<artist> &artists = artist_Hash.at(hashValue);
         for (const artist &artist : artists)
         {
@@ -372,7 +372,7 @@ void deleteartist(unordered_map<int, vector<artist>> &artist_Hash,
         {
             if (iter->id == artistId)
             {
-                artists.erase(iter);
+                artists.erase(iter); // to delete using erase (built in fun)
                 a_HashKey.erase(it);
                 cout << "artist deleted successfully." << endl;
 
@@ -439,24 +439,7 @@ void displaymusics(const unordered_map<int, vector<music>> &musicHashTable)
     }
 }
 
-// to display the file contents
-void displayFileContents(const string &filePath)
-{
-    ifstream file(filePath);
-    if (file.is_open())
-    {
-        string line;
-        while (getline(file, line))
-        {
-            cout << line << endl;
-        }
-        file.close();
-    }
-    else
-    {
-        cout << "Error opening file: " << filePath << endl;
-    }
-}
+
 int main()
 {
     int tableSize = 10;
