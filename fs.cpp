@@ -35,148 +35,7 @@ int getHash_Value(int key, int tableSize)
     return hasher(key) % tableSize; // returns hash value
 }
 
-// Function to add a artist
-void addartist(unordered_map<int, vector<artist>> &artist_Hash,
-               unordered_map<int, int> &a_HashKey, int tableSize)
-{
-    artist artist;
-    cout << "Enter artist ID: ";
-    cin >> artist.id;
-
-    // Check if the artist ID already exists
-    if (a_HashKey.count(artist.id) > 0)
-    {
-        cout << "artist ID already exists. Please enter a unique ID." << endl;
-        return;
-    }
-
-    cout << "Enter artist Name: ";
-    cin.ignore();
-    getline(cin, artist.name);
-    cout << "Enter artist gender: ";
-    getline(cin, artist.gender);
-
-    int hashValue = getHash_Value(artist.id, tableSize);
-    artist_Hash[hashValue].push_back(artist);
-    a_HashKey[artist.id] = hashValue;
-
-    // Save the details to the files
-    save_artist_info(artist_Hash);
-    save_artist_Hash_info(a_HashKey);
-}
-
-// Function to display all artists
-void disp_Artists(const unordered_map<int, vector<artist>> &artist_Hash)
-{
-    for (const auto &entry : artist_Hash)
-    {
-        for (const artist &artist : entry.second)
-        {
-            cout << "artist ID: " << artist.id << endl;
-            cout << "artist Name: " << artist.name << endl;
-            cout << "artist gender: " << artist.gender << endl;
-            cout << endl;
-        }
-    }
-}
-
-// Function to search for a artist
-void searchartist(const unordered_map<int, vector<artist>> &artist_Hash,
-                  const unordered_map<int, int> &a_HashKey, int tableSize)
-{
-    int artistId;
-    cout << "Enter artist ID to search: ";
-    cin >> artistId;
-
-    auto it = a_HashKey.find(artistId);
-    if (it != a_HashKey.end())
-    {
-        int hashValue = it->second;
-        const vector<artist> &artists = artist_Hash.at(hashValue);
-        for (const artist &artist : artists)
-        {
-            if (artist.id == artistId)
-            {
-                cout << "artist ID: " << artist.id << endl;
-                cout << "artist Name: " << artist.name << endl;
-                cout << "artist gender: " << artist.gender << endl;
-                return;
-            }
-        }
-    }
-
-    cout << "artist not found." << endl;
-}
-
-// Function to add an music
-void addmusic(unordered_map<int, vector<music>> &musicHashTable,
-              unordered_map<int, int> &musicHashKey, int tableSize,
-              const unordered_map<int, vector<artist>> &artist_Hash, unordered_map<int, int> &a_HashKey)
-{
-    music music;
-    cout << "Enter music ID: ";
-    cin >> music.id;
-
-    // Check if the music ID already exists
-    if (musicHashKey.count(music.id) > 0)
-    {
-        cout << "music ID already exists. Please enter a unique ID." << endl;
-        return;
-    }
-
-    cout << "Enter music Name: ";
-    cin.ignore();
-    getline(cin, music.name);
-
-    // Check if the entered artist ID exists
-    int artistId;
-label1:
-    cout << "Enter artist ID to link: ";
-    cin >> artistId;
-    if (a_HashKey.count(artistId) == 0)
-    {
-        cout << "artist with ID " << artistId << " does not exist." << endl;
-        goto label1;
-    }
-    music.artistId = artistId;
-
-    int hashValue = getHash_Value(music.id, tableSize);
-    musicHashTable[hashValue].push_back(music);
-    musicHashKey[music.id] = hashValue;
-
-    // Save the details to the files
-    save_music_info(musicHashTable);
-    save_music_Hash_info(musicHashKey);
-}
-
-// Function to search for an music
-void search_Music_Record(const unordered_map<int, vector<music>> &musicHashTable,
-                         const unordered_map<int, int> &musicHashKey, int tableSize)
-{
-    int musicId;
-    cout << "Enter music ID to search: ";
-    cin >> musicId;
-
-    auto it = musicHashKey.find(musicId);
-    if (it != musicHashKey.end())
-    {
-        int hashValue = it->second;
-        const vector<music> &musics = musicHashTable.at(hashValue);
-        for (const music &music : musics)
-        {
-            if (music.id == musicId)
-            {
-                cout << "music ID: " << music.id << endl;
-                cout << "music Name: " << music.name << endl;
-                cout << "artist ID: " << music.artistId << endl;
-                return;
-            }
-        }
-    }
-
-    cout << "music not found." << endl;
-}
-
+//
 // Function to save artist details to file
 void save_artist_info(const unordered_map<int, vector<artist>> &artist_Hash)
 {
@@ -253,6 +112,157 @@ void save_music_Hash_info(const unordered_map<int, int> &musicHashKey)
     {
         cerr << "Error opening music hash file for writing." << endl;
     }
+}
+
+// Function to add a artist
+void addartist(unordered_map<int, vector<artist>> &artist_Hash,
+               unordered_map<int, int> &a_HashKey, int tableSize)
+{
+    // creating the object of structure artist
+    artist artist;
+    cout << "Enter artist ID: ";
+    cin >> artist.id;
+
+    // Check if the artist ID already exists
+    if (a_HashKey.count(artist.id) > 0)
+    {
+        cout << "artist ID already exists. Please enter a unique ID." << endl;
+        return;
+    }
+
+    cout << "Enter artist Name: ";
+    cin.ignore();
+    getline(cin, artist.name);
+    cout << "Enter artist gender: ";
+    getline(cin, artist.gender);
+
+    int hashValue = getHash_Value(artist.id, tableSize); // generating a hash value for the artist id
+    artist_Hash[hashValue].push_back(artist);
+
+    // update the hash table for the corresponding key value pair
+    a_HashKey[artist.id] = hashValue;
+
+    // Save the details to the files
+    save_artist_info(artist_Hash);    // data file
+    save_artist_Hash_info(a_HashKey); // hash file
+}
+
+// Function to display all artists
+void disp_Artists(const unordered_map<int, vector<artist>> &artist_Hash)
+{
+    // loop works similarly to for-each loop
+    for (const auto &entry : artist_Hash)
+    {
+        for (const artist &artist : entry.second)
+        {
+            cout << "artist ID: " << artist.id << endl;
+            cout << "artist Name: " << artist.name << endl;
+            cout << "artist gender: " << artist.gender << endl;
+            cout << endl;
+        }
+    }
+}
+
+// Function to search for a artist
+void search_Artist(const unordered_map<int, vector<artist>> &artist_Hash,
+                   const unordered_map<int, int> &a_HashKey, int tableSize)
+{
+    int artistId;
+    cout << "Enter artist ID to search: ";
+    cin >> artistId;
+
+    auto it = a_HashKey.find(artistId); // search the in the hash table using find() built-in fun
+    if (it != a_HashKey.end())
+    {
+        int hashValue = it->second; //"second" variable will be the value of hash table
+        const vector<artist> &artists = artist_Hash.at(hashValue);
+        for (const artist &artist : artists)
+        {
+            if (artist.id == artistId)
+            {
+                cout << "artist ID: " << artist.id << endl;
+                cout << "artist Name: " << artist.name << endl;
+                cout << "artist gender: " << artist.gender << endl;
+                return;
+            }
+        }
+    }
+
+    cout << "artist not found." << endl;
+}
+
+// Function to add an music
+void addmusic(unordered_map<int, vector<music>> &musicHashTable,
+              unordered_map<int, int> &musicHashKey, int tableSize,
+              const unordered_map<int, vector<artist>> &artist_Hash, unordered_map<int, int> &a_HashKey)
+{
+    music music;
+    cout << "Enter music ID: ";
+    cin >> music.id;
+
+    // Check if the music ID already exists
+    if (musicHashKey.count(music.id) > 0)
+    {
+        cout << "music ID already exists. Please enter a unique ID." << endl;
+        return;
+    }
+
+    cout << "Enter music Name: ";
+    cin.ignore();
+    getline(cin, music.name);
+
+    // Check if the entered artist ID exists
+    int artistId;
+
+label1:
+    cout << "Enter artist ID to link: ";
+    cin >> artistId;
+
+    // check artist id exists or not
+    if (a_HashKey.count(artistId) == 0)
+    {
+        cout << "artist with ID " << artistId << " does not exist." << endl;
+        goto label1;
+    }
+    music.artistId = artistId;
+    // now we generate the hash value for music id
+    int hashValue = getHash_Value(music.id, tableSize);
+
+    musicHashTable[hashValue].push_back(music); // push_back will append the value to the file
+
+    musicHashKey[music.id] = hashValue;
+
+    // Save the details to the files
+    save_music_info(musicHashTable);
+    save_music_Hash_info(musicHashKey);
+}
+
+// Function to search for an music
+void search_Music_Record(const unordered_map<int, vector<music>> &musicHashTable,
+                         const unordered_map<int, int> &musicHashKey, int tableSize)
+{
+    int musicId;
+    cout << "Enter music ID to search: ";
+    cin >> musicId;
+
+    auto it = musicHashKey.find(musicId);
+    if (it != musicHashKey.end())
+    {
+        int hashValue = it->second;
+        const vector<music> &musics = musicHashTable.at(hashValue);
+        for (const music &music : musics)
+        {
+            if (music.id == musicId)
+            {
+                cout << "music ID: " << music.id << endl;
+                cout << "music Name: " << music.name << endl;
+                cout << "artist ID: " << music.artistId << endl;
+                return;
+            }
+        }
+    }
+
+    cout << "music not found." << endl;
 }
 
 // Function to load artist data from file into the hash table
@@ -469,19 +479,19 @@ int main()
              << "1. Add Artist"
              << "\t\t\t##" << endl;
         cout << "##\t\t"
-             << "2. Add music"
-             << "\t\t\t##" << endl;
+             << "2. Delete artist"
+             << "\t\t##" << endl;
         cout << "##\t\t"
              << "3. Search artist"
              << "\t\t##" << endl;
         cout << "##\t\t"
-             << "4. Search music"
+             << "4. Add music"
              << "\t\t\t##" << endl;
         cout << "##\t\t"
-             << "5. Delete artist"
+             << "5. Delete music "
              << "\t\t##" << endl;
         cout << "##\t\t"
-             << "6. Delete music"
+             << "6. Search music"
              << "\t\t\t##" << endl;
         cout << "##\t\t"
              << "7. Display artists"
@@ -500,19 +510,19 @@ int main()
         case 1:
             addartist(artist_Hash, a_HashKey, tableSize);
             break;
-        case 2:
+        case 4:
             addmusic(musicHashTable, musicHashKey, tableSize, artist_Hash, a_HashKey);
             break;
         case 3:
-            searchartist(artist_Hash, a_HashKey, tableSize);
-            break;
-        case 4:
-            search_Music_Record(musicHashTable, musicHashKey, tableSize);
-            break;
-        case 5:
-            deleteartist(artist_Hash, a_HashKey, musicHashTable, musicHashKey);
+            search_Artist(artist_Hash, a_HashKey, tableSize);
             break;
         case 6:
+            search_Music_Record(musicHashTable, musicHashKey, tableSize);
+            break;
+        case 2:
+            deleteartist(artist_Hash, a_HashKey, musicHashTable, musicHashKey);
+            break;
+        case 5:
             deletemusic(musicHashTable, musicHashKey);
             break;
         case 7:
